@@ -18,3 +18,8 @@ This is a collection of my personal machine learning notes and code implementati
 
 ## General Techniques
 - [Gradient Descent](GeneralTechniques/gradient_descent.md)
+- [Overfitting](GeneralTechniques/overfitting.md)
+- [Regularization](GeneralTechniques/regularization.md)
+
+## Neural Networks
+TODO
