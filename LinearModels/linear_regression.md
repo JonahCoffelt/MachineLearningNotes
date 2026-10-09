@@ -4,12 +4,12 @@ Linear regression is a class of linear models that are used to solve problems of
 ## Prediction
 Prediction is simple, given a weight vector $w$ and an input vector of features $x$, the output of the model $y$ is simply the linear signal $s$:
 
-$$y = s = w^Tx$$
+$$\hat{y} = s = w^Tx$$
 
 Note that $x$ will have the bias set with $x_0 = 1$.
 
 ## Example
-TODO
+**TODO**
 
 ## Training Data
 Given $N$ training examples, we stack the input vectors as the rows of a matrix $X$ and the correct outputs into a vector $y$:
@@ -45,4 +45,14 @@ Note that the loss is a function of the weights $w$, so if we want to change the
 
 ## Training
 ### Closed Form
-Unlike most machine learning models, there is a closed for solution for training a linear regression model. To do this, we need a dataset $X$ and labels $y$.
+Unlike most machine learning models, there is a closed for solution for training a linear regression model. To do this, we need a dataset $X$ and labels $y$. The optimal weights is given by:
+
+$$w = (X^T X)^{-1} X^T y$$
+
+Note that this only works when $X^T X$ is invertable. 
+
+#### Derivation
+**TODO**
+
+### Gradient Decent
+**TODO**
