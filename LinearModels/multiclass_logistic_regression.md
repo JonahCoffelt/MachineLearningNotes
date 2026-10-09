@@ -34,7 +34,7 @@ $$
 At this point in the binary case, we applied the sigmoid function. For the multiclass case, we apply a similar function known as *softmax*:
 
 $$
-\operatorname{softmax}(\mathbf{\vec{v}}) = \frac{1}{\sum_{k=1}^K e^{v_k}}
+softmax(\mathbf{\vec{v}}) = \frac{1}{\sum_{k=1}^K e^{v_k}}
 \begin{bmatrix}
 e^{v_1} \\
 e^{v_2} \\
