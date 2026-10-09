@@ -15,4 +15,6 @@ This is a collection of my personal machine learning notes and code implementati
     - [Numpy Implementation](LinearModels/perceptron.py)
 - [Logistic Regression](LinearModels/logistic_regression.md)
     - [Numpy Implementation](LinearModels/logistic_regression.py)
+
+## General Techniques
 - [Gradient Descent](GeneralTechniques/gradient_descent.md)
