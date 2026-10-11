@@ -2,8 +2,10 @@
 Regularization is a technique used to minimize overfitting. It does this by introducing a penalty term in the loss function to discourage weights with large magnitudes:
 
 $$
-\tilde{E}(w) = E(w) + \frac{\lambda}{2} \left\| w \right\|_2^2\\
-\left\| w \right\|_2^2 = \sum_{i=1}^D w_i^2
+\begin{aligned}
+\tilde{E}(w) &= E(w) + \frac{\lambda}{2}\|w\|_2^2 \\
+\|w\|_2^2 &= \sum_{i=0}^d w_i^2
+\end{aligned}
 $$
 
 This form of regularization is known as L2. L2 is the most common form of regularization, and is widely used for logistic regression and neural networks. The $\lambda$ factor is a hyper-parameter used to control the relative importance of the regularization term. 
