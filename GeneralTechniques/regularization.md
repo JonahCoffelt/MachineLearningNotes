@@ -3,8 +3,8 @@ Regularization is a technique used to minimize overfitting. It does this by intr
 
 $$
 \begin{aligned}
-\tilde{E}(w) &= E(w) + \frac{\lambda}{2}\|w\|_2^2 \\
-\|w\|_2^2 &= \sum_{i=0}^d w_i^2
+\tilde{E}(w) &= E(w) + \frac{\lambda}{2}\lVert w \rVert_2^2 \\
+\lVert w \rVert_2^2 &= \sum_{i=0}^d w_i^2
 \end{aligned}
 $$
 
