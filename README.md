@@ -8,7 +8,7 @@ This is a collection of my personal machine learning notes and code implementati
 # Contents
 
 ## Linear Models
-### [Overview of Linear Models](LinearModels/linear_models.md)
+- [Overview of Linear Models](LinearModels/linear_models.md)
 - [Linear Regression](LinearModels/linear_regression.md)
     - [Numpy Implementation](LinearModels/linear_regression.py)
 - [Perceptron](LinearModels/perceptron.md)
@@ -23,4 +23,16 @@ This is a collection of my personal machine learning notes and code implementati
 - [Regularization](GeneralTechniques/regularization.md)
 
 ## Neural Networks
-TODO
+- [Neural Networks](NeuralNetworks/neural_networks.md)
+
+# Setup
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+Run any file directly, for example: 
+```bash
+python LinearModels/linear_regression.py
+```
