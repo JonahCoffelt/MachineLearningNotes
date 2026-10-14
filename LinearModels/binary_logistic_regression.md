@@ -1,4 +1,4 @@
-# Logistic Regression
+# Binary Logistic Regression
 Logistic regression models are linear models used for probability and classification problems.
 
 ## Prediction
