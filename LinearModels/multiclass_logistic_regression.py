@@ -120,6 +120,6 @@ class MulticlassLogisticRegression:
 
 X, Y = load_iris()
 model = MulticlassLogisticRegression(X.shape[1], Y.shape[1])
-model.train(X, Y, learning_rate=0.01, batch_size=16, epochs=150)
+model.train(X, Y, learning_rate=0.1, batch_size=32, epochs=50)
 preds = model.predict(X)
 print("Iris accuracy:", (preds == np.argmax(Y, axis=1)).mean())
