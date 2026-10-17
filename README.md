@@ -16,6 +16,7 @@ This is a collection of my personal machine learning notes and code implementati
 - [Binary Logistic Regression](LinearModels/binary_logistic_regression.md)
     - [Numpy Implementation](LinearModels/binary_logistic_regression.py)
 - [Multiclass Logistic Regression](LinearModels/multiclass_logistic_regression.md)
+    - [Numpy Implementation](LinearModels/multiclass_logistic_regression.py)
 
 ## General Techniques
 - [Gradient Descent](GeneralTechniques/gradient_descent.md)
