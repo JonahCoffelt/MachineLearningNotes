@@ -1,8 +1,6 @@
 import numpy as np
 from Helpers import load_diabetes, evaluate_mse
 
-rng = np.random.default_rng()
-
 class LinearRegressionModel:
     """
     Implementation of a linear regression model using closed form training. 
@@ -15,7 +13,8 @@ class LinearRegressionModel:
             n_features: The number of input features (dim of x), not including bias
         """
         
-        self.weights = rng.random((n_features + 1))
+        self.rng = np.random.default_rng(42)
+        self.weights = self.rng.random((n_features + 1))  # Add the bias term
         self.n_features = n_features
 
     def train(self, X: np.ndarray, Y: np.ndarray) -> None:
@@ -33,15 +32,26 @@ class LinearRegressionModel:
         X_transpose = X.T
         self.weights = np.linalg.inv(X_transpose @ X) @ (X_transpose @ Y)
 
+    def forward(self, x_aug: np.ndarray) -> float:
+        """
+        Predict with input features that already include the bias term
+        Args:
+            x_aug: numpy array (n_features + 1, ) of the input features and the bias
+
+        """
+
+        return float(self.weights.T @ x_aug)
+
     def predict(self, x: np.ndarray) -> float:
         """
-        Returns a prediction using the models weights. 
+        Get the prediction for a single set of input features. 
+        Input should not include the bias term
         Args:
             x: numpy array (n_features, ) of the input features, does not include bias
         """
 
-        x = np.append(x, 1)
-        return float(self.weights.T @ x)
+        x_aug = np.append(x, 1)
+        return self.forward(x_aug)
 
 X, Y = load_diabetes()
 n_features = X.shape[1]
