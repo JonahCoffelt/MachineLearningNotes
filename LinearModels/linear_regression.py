@@ -56,5 +56,6 @@ class LinearRegressionModel:
 X, Y = load_diabetes()
 n_features = X.shape[1]
 model = LinearRegressionModel(n_features)
+print("Diabetes MSE (before training): ", evaluate_mse(model, X, Y))
 model.train(X, Y)
 print("Diabetes MSE: ", evaluate_mse(model, X, Y))

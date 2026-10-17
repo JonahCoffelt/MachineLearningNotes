@@ -1,5 +1,5 @@
 import numpy as np
-from Helpers import load_breast_cancer, evaluate_mse
+from Helpers import load_breast_cancer
 
 def sigmoid(z: float | np.ndarray) -> float | np.ndarray:
     """
