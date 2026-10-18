@@ -12,7 +12,9 @@ def tanh_prime(s: np.ndarray) -> np.ndarray:
 class NeuralNetwork:
     def __init__(self, dims: tuple) -> None:
         """
-        
+        Create a new Neural Network.
+        Args:
+            dims: tuple of integers representing the number of neurons in each layer (input, hidden*, output)
         """
 
         self.rng = np.random.default_rng(42)
@@ -21,12 +23,21 @@ class NeuralNetwork:
         self.n_layers = len(self.weights)
 
     def loss(self, q: np.ndarray, p: np.ndarray) -> float:
+        """
+        Calculate the cross-entropy loss between the predicted and true probabilities.
+        Args:
+            q: numpy array (n_samples, n_classes) of predicted probabilities
+            p: numpy array (n_samples, n_classes) of true probabilities
+        """
         q = np.clip(q, 1e-12, 1.0)
         return -np.sum(p * np.log(q))
 
     def gradient(self, y: np.ndarray, x_aug: np.ndarray) -> list[np.ndarray]:
         """
-        
+        Calculate the gradient of the loss function with respect to the weights.
+        Args:
+            y: numpy array (n_samples, ) of true labels
+            x_aug: numpy array (n_samples, n_features + 1) of augmented input features
         """
         
         signals = []
@@ -108,7 +119,9 @@ class NeuralNetwork:
 
     def forward(self, x_aug: np.ndarray) -> np.ndarray:
         """
-        
+        Forward pass through the network.
+        Args:
+            x_aug: numpy array (n_samples, n_features + 1) of augmented input features
         """
         
         z = x_aug
@@ -122,6 +135,12 @@ class NeuralNetwork:
             z = np.insert(np.tanh(signal), 0, 1)
 
     def predict(self, x: np.ndarray) -> np.ndarray:
+        """
+        Predict the class labels for the given data.
+        Args:
+            x: numpy array (n_samples, n_features) of dataset features
+        """
+        
         x = np.asarray(x)
         if x.ndim == 1:
             x = x[None, :]

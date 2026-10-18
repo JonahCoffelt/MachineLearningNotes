@@ -25,6 +25,7 @@ This is a collection of my personal machine learning notes and code implementati
 
 ## Neural Networks
 - [Neural Networks](NeuralNetworks/neural_networks.md)
+    - [Numpy Implementation](NeuralNetworks/neural_networks.py)
 
 # Setup
 ```bash
