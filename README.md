@@ -18,10 +18,10 @@ This is a collection of my personal machine learning notes and code implementati
 - [Multiclass Logistic Regression](LinearModels/multiclass_logistic_regression.md)
     - [Numpy Implementation](LinearModels/multiclass_logistic_regression.py)
 
-## General Techniques
-- [Gradient Descent](GeneralTechniques/gradient_descent.md)
-- [Overfitting](GeneralTechniques/overfitting.md)
-- [Regularization](GeneralTechniques/regularization.md)
+## LearningTechniques
+- [Gradient Descent](LearningTechniques/gradient_descent.md)
+- [Overfitting](LearningTechniques/overfitting.md)
+- [Regularization](LearningTechniques/regularization.md)
 
 ## Neural Networks
 - [Neural Networks](NeuralNetworks/neural_networks.md)
