@@ -1,7 +1,3 @@
-import contextlib
-import io
-import numpy as np
-
 from NeuralNetworks import NeuralNetwork, Linear, ReLU, CrossEntropy
 from Helpers import load_mnist, train_valid_test_split, accuracy
 
