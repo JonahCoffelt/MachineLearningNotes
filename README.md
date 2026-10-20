@@ -22,6 +22,8 @@ This is a collection of my personal machine learning notes and code implementati
 - [Gradient Descent](LearningTechniques/gradient_descent.md)
 - [Overfitting](LearningTechniques/overfitting.md)
 - [Regularization](LearningTechniques/regularization.md)
+- [Normalization](LearningTechniques/normalization.md)
+
 
 ## Neural Networks
 - [Neural Networks](NeuralNetworks/neural_networks.md)

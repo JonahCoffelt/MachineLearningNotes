@@ -1,5 +1,5 @@
 import numpy as np
-from Helpers import load_iris
+from Helpers import load_iris, normalized_split
 
 def softmax(v: np.ndarray) -> np.ndarray:
     v = v - np.max(v, axis=-1, keepdims=True)  # Normalize for saftey (this is pretty standard)
@@ -147,9 +147,11 @@ class NeuralNetwork:
         x_aug = np.hstack([np.ones((x.shape[0], 1)), x])
         return np.array([np.argmax(self.forward(row)) for row in x_aug])
 
-        
+
 X, Y = load_iris()
 model = NeuralNetwork((X.shape[1], 8, Y.shape[1]))
-model.train(X, Y, learning_rate=0.05, batch_size=32, epochs=500)
-preds = model.predict(X)
-print("Iris accuracy:", (preds == np.argmax(Y, axis=1)).mean())
+(X_train, Y_train), (X_valid, Y_valid), (X_test, Y_test) = normalized_split(X, Y)
+
+model.train(X_train, Y_train, learning_rate=0.01, batch_size=32, epochs=500)
+preds = model.predict(X_test)
+print("Iris accuracy:", (preds == np.argmax(Y_test, axis=1)).mean())

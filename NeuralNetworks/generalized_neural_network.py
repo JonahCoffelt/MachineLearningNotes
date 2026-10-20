@@ -1,5 +1,5 @@
 import numpy as np
-from Helpers import load_iris
+from Helpers import load_iris, normalized_split
 
 rng = np.random.default_rng(42)
 
@@ -37,7 +37,8 @@ class Linear(Layer):
         self.out_dim = out_dim
 
         # Initialize the weights and biases
-        self.W = rng.standard_normal((in_dim, out_dim)) * np.sqrt(2 / in_dim)
+        # self.W = rng.standard_normal((in_dim, out_dim)) * np.sqrt(2 / in_dim)
+        self.W = rng.random((in_dim, out_dim)) * 2 - 1
         self.b = np.zeros(out_dim)
         
         # Initalize the input and gradient states
@@ -131,7 +132,7 @@ class CrossEntropy(Loss):
         return (self.probs - self.y) / len(self.y)
 
 class NeuralNetwork:
-    def __init__(self, layers: tuple[Layer], loss_layer: Loss) -> None:
+    def __init__(self, layers: tuple[Layer, ...], loss_layer: Loss) -> None:
         self.layers = layers
         self.loss_layer = loss_layer
 
@@ -212,6 +213,7 @@ class NeuralNetwork:
         """
         return np.argmax(self.forward(X), axis=1)
 
+# Create model
 model = NeuralNetwork(
     (
         Linear(4, 8), 
@@ -220,8 +222,12 @@ model = NeuralNetwork(
     ),
     CrossEntropy()
 )
+
+# Load data
 X, Y = load_iris()
-model.train(X, Y, learning_rate=0.01, batch_size=32, epochs=1000)
-preds = model.predict(X)
-print("Iris accuracy:", (preds == np.argmax(Y, axis=1)).mean())
+(X_train, Y_train), (X_valid, Y_valid), (X_test, Y_test) = normalized_split(X, Y)
+
+model.train(X_train, Y_train, learning_rate=0.01, batch_size=32, epochs=500)
+preds = model.predict(X_test)
+print("Iris accuracy:", (preds == np.argmax(Y_test, axis=1)).mean())
 
