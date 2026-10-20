@@ -1,5 +1,6 @@
 import numpy as np
-from Helpers import load_iris, normalized_split
+from numpy._core import test
+from Helpers import load_iris, normalized_split, load_mnist, train_valid_test_split, accuracy
 
 rng = np.random.default_rng(42)
 
@@ -38,7 +39,8 @@ class Linear(Layer):
 
         # Initialize the weights and biases
         # self.W = rng.standard_normal((in_dim, out_dim)) * np.sqrt(2 / in_dim)
-        self.W = rng.random((in_dim, out_dim)) * 2 - 1
+        # self.W = rng.random((in_dim, out_dim)) * 2 - 1
+        self.W = rng.standard_normal((in_dim, out_dim)) * np.sqrt(2 / (in_dim + out_dim))
         self.b = np.zeros(out_dim)
         
         # Initalize the input and gradient states
@@ -98,6 +100,17 @@ class Tanh(Layer):
             sensitivity: numpy array (n_samples, out_dim) of gradient of the loss function with respect to the output of this layer
         """
         return sensitivity * (1 - self.out**2)
+
+class ReLU(Layer):
+    def __init__(self) -> None:
+        self.mask = None
+
+    def forward(self, x: np.ndarray) -> np.ndarray:
+        self.mask = x > 0
+        return x * self.mask
+
+    def backprop(self, sensitivity: np.ndarray) -> np.ndarray:
+        return sensitivity * self.mask
 
 class Loss:
     def forward(self, pred: np.ndarray, target: np.ndarray) -> float:
@@ -213,21 +226,61 @@ class NeuralNetwork:
         """
         return np.argmax(self.forward(X), axis=1)
 
-# Create model
-model = NeuralNetwork(
-    (
-        Linear(4, 8), 
-        Tanh(), 
-        Linear(8, 3)
-    ),
-    CrossEntropy()
-)
+def test_iris():
+    # Create model
+    print("Creating an iris model...")
+    model = NeuralNetwork(
+        (
+            Linear(4, 8), 
+            Tanh(), 
+            Linear(8, 3)
+        ),
+        CrossEntropy()
+    )
 
-# Load data
-X, Y = load_iris()
-(X_train, Y_train), (X_valid, Y_valid), (X_test, Y_test) = normalized_split(X, Y)
+    # Load data
+    print("Loading data...")
+    X, Y = load_iris()
+    (X_train, Y_train), (X_valid, Y_valid), (X_test, Y_test) = normalized_split(X, Y)
 
-model.train(X_train, Y_train, learning_rate=0.01, batch_size=32, epochs=500)
-preds = model.predict(X_test)
-print("Iris accuracy:", (preds == np.argmax(Y_test, axis=1)).mean())
+    # Train
+    print("Begin training:")
+    model.train(X_train, Y_train, learning_rate=0.01, batch_size=32, epochs=500)
 
+    # Test
+    print("Begin testing:")
+    print("Iris test accuracy:", accuracy(model, X_test, Y_test))
+
+
+def test_mnist():
+    # Create model
+    print("Creating an mnist model...")
+    model = NeuralNetwork(
+        (
+            Linear(784, 128), 
+            ReLU(), 
+            Linear(128, 10)
+        ),
+        CrossEntropy()
+    )
+
+    # Load data
+    print("Loading data...")
+    X, Y = load_mnist()
+    (X_train, Y_train), (X_valid, Y_valid), (X_test, Y_test) = train_valid_test_split(X, Y)
+
+    mu, sigma = X_train.mean(), X_train.std()
+    X_train = (X_train - mu) / sigma
+    X_valid = (X_valid - mu) / sigma
+    X_test = (X_test - mu) / sigma
+
+    # Train
+    print("Begin training:")
+    model.train(X_train, Y_train, learning_rate=0.1, batch_size=64, epochs=30)
+
+    # Test
+    print("Begin testing:")
+    print("MNIST test accuracy:", accuracy(model, X_test, Y_test))
+
+if __name__ == "__main__":
+    test_mnist()

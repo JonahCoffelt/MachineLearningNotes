@@ -1,2 +1,2 @@
-from .data_loader import load_diabetes, load_breast_cancer, load_iris, normalize, data_mean, data_stdev, train_valid_test_split, normalized_split
+from .data_loader import load_diabetes, load_breast_cancer, load_iris, load_mnist, accuracy, normalize, data_mean, data_stdev, train_valid_test_split, normalized_split
 from .evaluate import evaluate_accuracy, evaluate_mse

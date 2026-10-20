@@ -83,6 +83,9 @@ def normalized_split(X: np.ndarray, Y: np.ndarray, train: float=0.8, valid: floa
         (X_test, Y_test)
     )
 
+def accuracy(model, X, Y):
+    return (model.predict(X) == np.argmax(Y, axis=1)).mean()
+
 def one_hot(labels: np.ndarray, n_classes: int) -> np.ndarray:
     """
     Convert integer class labels to one-hot vectors.
@@ -129,3 +132,18 @@ def load_iris() -> tuple[np.ndarray, np.ndarray]:
 
     X, labels = sk_datasets.load_iris(return_X_y=True)
     return np.asarray(X), one_hot(np.asarray(labels), 3)
+
+def load_mnist() -> tuple[np.ndarray, np.ndarray]:
+    """
+    Wrapper for the sklearn fetch_openml MNIST dataset.
+    Returns:
+        X: (70000, 784) array of flattened 28x28 images, scaled to [0, 1]
+        Y: (70000, 10) array of one-hot labels (digits 0-9)
+    """
+
+    X, labels = sk_datasets.fetch_openml(
+        "mnist_784", version=1, return_X_y=True, as_frame=False, parser="liac-arff"
+    )
+    X = np.asarray(X, dtype=float) / 255.0
+    labels = np.asarray(labels).astype(int)
+    return X, one_hot(labels, 10)
