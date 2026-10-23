@@ -10,6 +10,7 @@ def softmax(v: np.ndarray) -> np.ndarray:
 
 class Layer:
     def __init__(self) -> None:
+        self.training = False
         pass
 
     def forward(self, x: np.ndarray) -> np.ndarray:
@@ -112,6 +113,28 @@ class ReLU(Layer):
     def backprop(self, sensitivity: np.ndarray) -> np.ndarray:
         return sensitivity * self.mask
 
+class Dropout(Layer):
+    def __init__(self, drop_probability: float=0.5) -> None:
+        self.drop_probability = drop_probability
+        self.mask = None
+        self.training = False
+
+    def forward(self, x: np.ndarray) -> np.ndarray:
+        # Identity during prediction
+        if not self.training or self.drop_probability == 0:
+            return x
+
+        # Generate new mask on forward
+        self.mask = (rng.random(x.shape) >= self.drop_probability)
+        # Divide by (1 - p) so that prediction stays consistent
+        self.mask = self.mask / (1 - self.drop_probability)
+        return x * self.mask
+
+    def backprop(self, sensitivity: np.ndarray) -> np.ndarray:
+        if not self.training or self.drop_probability == 0:
+            return sensitivity
+        return sensitivity * self.mask
+
 class Loss:
     def forward(self, pred: np.ndarray, target: np.ndarray) -> float:
         raise NotImplementedError
@@ -193,6 +216,10 @@ class NeuralNetwork:
             batch_size: int: batch size
             epochs: int: number of epochs
         """
+
+        for layer in self.layers:
+            layer.training = True
+        
         n_samples = len(X)
         for epoch in range(epochs):
             order = rng.permutation(n_samples)
@@ -224,6 +251,9 @@ class NeuralNetwork:
         Returns:
             numpy array (n_samples, out_dim) of predicted features
         """
+        for layer in self.layers:
+            layer.training = False
+
         return np.argmax(self.forward(X), axis=1)
 
 def test_iris():
@@ -257,9 +287,10 @@ def test_mnist():
     print("Creating an mnist model...")
     model = NeuralNetwork(
         (
-            Linear(784, 128), 
+            Linear(784, 128, 3e-3), 
             ReLU(), 
-            Linear(128, 10)
+            Dropout(0.5),
+            Linear(128, 10, 3e-3)
         ),
         CrossEntropy()
     )
@@ -282,50 +313,6 @@ def test_mnist():
     print("Begin testing:")
     print("MNIST test accuracy:", accuracy(model, X_test, Y_test))
 
-def test_regularization():
-    # Create model
-    print("Creating an mnist model...")
-    model_none = NeuralNetwork(
-        (
-            Linear(784, 128, 0), 
-            ReLU(), 
-            Linear(128, 10, 0)
-        ),
-        CrossEntropy()
-    )
-
-    model_regularization = NeuralNetwork(
-        (
-            Linear(784, 128, 1e-2), 
-            ReLU(), 
-            Linear(128, 10, 1e-2)
-        ),
-        CrossEntropy()
-    )
-
-    # Load data
-    print("Loading data...")
-    X, Y = load_mnist()
-    (X_train, Y_train), (X_valid, Y_valid), (X_test, Y_test) = train_valid_test_split(X, Y)
-    X_train, Y_train = X_train[:2000], Y_train[:2000]
-
-    mu, sigma = X_train.mean(), X_train.std()
-    X_train = (X_train - mu) / sigma
-    X_valid = (X_valid - mu) / sigma
-    X_test = (X_test - mu) / sigma
-
-    # Train
-    print("Begin training no regularization:")
-    model_none.train(X_train, Y_train, learning_rate=0.1, batch_size=64, epochs=100)
-    print("Begin training with regularization:")
-    model_regularization.train(X_train, Y_train, learning_rate=0.1, batch_size=64, epochs=100)
-
-
-    # Test
-    print("Begin testing:")
-    print("MNIST no regularization test accuracy:", accuracy(model_none, X_test, Y_test))
-    print("MNIST with regularization test accuracy:", accuracy(model_regularization, X_test, Y_test))
-
 
 if __name__ == "__main__":
-    test_regularization()
+    test_mnist()
