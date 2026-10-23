@@ -287,13 +287,13 @@ def test_mnist():
     print("Creating an mnist model...")
     model = NeuralNetwork(
         (
-            Linear(784, 128, 3e-3), 
-            ReLU(), 
-            Dropout(0.5),
-            Linear(128, 10, 3e-3)
+            Linear(784, 512, 1e-5), ReLU(), Dropout(0.3),
+            Linear(512, 512, 1e-5), ReLU(), Dropout(0.3),
+            Linear(512, 10, 1e-5),
         ),
-        CrossEntropy()
+        CrossEntropy(),
     )
+
 
     # Load data
     print("Loading data...")
@@ -307,7 +307,7 @@ def test_mnist():
 
     # Train
     print("Begin training:")
-    model.train(X_train, Y_train, learning_rate=0.1, batch_size=64, epochs=30)
+    model.train(X_train, Y_train, learning_rate=0.1, batch_size=128, epochs=40)
 
     # Test
     print("Begin testing:")
