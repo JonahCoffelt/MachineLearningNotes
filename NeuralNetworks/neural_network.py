@@ -378,7 +378,7 @@ def test_mnist():
 
     # Train
     print("Begin training:")
-    model.train(X_train, Y_train, learning_rate=0.1, batch_size=128, epochs=5)
+    model.train(X_train, Y_train, learning_rate=0.1, batch_size=128, epochs=40)
 
     # Test
     print("Begin testing:")
@@ -387,15 +387,3 @@ def test_mnist():
 
 if __name__ == "__main__":
     test_mnist()
-
-    # norm_layer = BatchNorm1d()
-    # norm_layer.training = True
-    
-    # x = np.array([
-    #     [12, 0, -5],
-    #     [14, 10, 5],
-    #     [14, 10, 5],
-    #     [12, 0, -5]
-    # ])
-
-    # z = norm_layer.forward(x).T
