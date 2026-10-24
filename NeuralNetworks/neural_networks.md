@@ -59,30 +59,3 @@ $$\delta^{(\ell)} = \theta'(s^{(\ell)}) \otimes \left[ W^{(\ell+1)} \delta^{(\el
 $$\delta^{(L)} = 2(x^{(L)} - y)\,\theta'(s^{(L)})$$
 
 $$\frac{\partial E}{\partial W^{(\ell)}} = x^{(\ell-1)} (\delta^{(\ell)})^T$$
-
-
-## Activation functions
-
-**tanh**
-
-$$\theta(s) = \tanh(s)$$
-
-$$\theta'(s) = 1 - \tanh^2(s) = 1 - x^2$$
-
-**sigmoid (logistic)**
-
-$$\theta(s) = \frac{1}{1 + e^{-s}}$$
-
-$$\theta'(s) = \theta(s)\bigl(1 - \theta(s)\bigr) = x(1 - x)$$
-
-**ReLU**
-
-$$\theta(s) = \max(0, s)$$
-
-$$\theta'(s) = \begin{cases} 1 & s > 0 \\ 0 & s \le 0 \end{cases}$$
-
-**identity**
-
-$$\theta(s) = s$$
-
-$$\theta'(s) = 1$$

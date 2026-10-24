@@ -43,7 +43,7 @@ python LinearModels/linear_regression.py
 - [Neural Networks](NeuralNetworks/neural_networks.md)
     - [Numpy Implementation](NeuralNetworks/neural_network.py)
 - [Activation Functions](NeuralNetworks/activation_functions.md)
-    - [Numpy Implementation](NeuralNetworks/activation_functions.py)
+    - [Numpy Implementation](NeuralNetworks/activations.py)
 - [Loss Functions](NeuralNetworks/loss_functions.md)
     - [Numpy Implementation](NeuralNetworks/loss.py)
 - [Dropout](NeuralNetworks/dropout.md)
