@@ -40,7 +40,6 @@ def test_mnist():
         CrossEntropy(),
     )
 
-
     # Load data
     print("Loading data...")
     X, Y = load_mnist()

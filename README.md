@@ -5,6 +5,19 @@ This is a collection of my personal machine learning notes and code implementati
 - Learning From Data textbook. 
 
 
+# Setup
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+Run any file directly, for example: 
+```bash
+python LinearModels/linear_regression.py
+```
+
+
 # Contents
 
 ## Linear Models
@@ -28,16 +41,12 @@ This is a collection of my personal machine learning notes and code implementati
 
 ## Neural Networks
 - [Neural Networks](NeuralNetworks/neural_networks.md)
-    - [Numpy Implementation](NeuralNetworks/neural_networks.py)
-
-# Setup
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
-```
-
-Run any file directly, for example: 
-```bash
-python LinearModels/linear_regression.py
-```
+    - [Numpy Implementation](NeuralNetworks/neural_network.py)
+- [Activation Functions](NeuralNetworks/activation_functions.md)
+    - [Numpy Implementation](NeuralNetworks/activation_functions.py)
+- [Loss Functions](NeuralNetworks/loss_functions.md)
+    - [Numpy Implementation](NeuralNetworks/loss.py)
+- [Dropout](NeuralNetworks/dropout.md)
+    - [Numpy Implementation](NeuralNetworks/dropout.py)
+- [Batch Normalization](NeuralNetworks/batch_normalization.md)
+    - [Numpy Implementation](NeuralNetworks/batch_norm.py)
