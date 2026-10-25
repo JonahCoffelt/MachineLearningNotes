@@ -5,17 +5,11 @@ This is a collection of my personal machine learning notes and code implementati
 - Learning From Data textbook. 
 
 
-# Setup
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
-```
-
-Run any file directly, for example: 
-```bash
-python LinearModels/linear_regression.py
-```
+<p>
+  <img src="Visualization/mnist_linear_outputs.png" alt="Linear model weights" height="200">
+  <img src="Visualization/mnist_confusion_matrix.png" alt="Confusion matrix" height="200">
+  <img src="Visualization/mnist_softmax_outputs.png" alt="Least confident predictions" height="200">
+</p>
 
 
 # Contents
@@ -50,3 +44,16 @@ python LinearModels/linear_regression.py
     - [Numpy Implementation](NeuralNetworks/dropout.py)
 - [Batch Normalization](NeuralNetworks/batch_normalization.md)
     - [Numpy Implementation](NeuralNetworks/batch_norm.py)
+
+
+# Setup
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+Run any file directly, for example: 
+```bash
+python LinearModels/linear_regression.py
+```

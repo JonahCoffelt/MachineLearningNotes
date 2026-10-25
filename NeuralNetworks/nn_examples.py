@@ -27,7 +27,6 @@ def test_iris():
     print("Begin testing:")
     print("Iris test accuracy:", accuracy(model, X_test, Y_test))
 
-
 def test_mnist():
     # Create model
     print("Creating an mnist model...")
@@ -52,7 +51,7 @@ def test_mnist():
 
     # Train
     print("Begin training:")
-    model.train(X_train, Y_train, learning_rate=0.1, batch_size=128, epochs=40)
+    model.train(X_train, Y_train, learning_rate=0.1, batch_size=128, epochs=5)
 
     # Test
     print("Begin testing:")
