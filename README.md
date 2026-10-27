@@ -45,6 +45,7 @@ This is a collection of my personal machine learning notes and code implementati
     - [Numpy Implementation](NeuralNetworks/batch_norm.py)
 
 ## Convolutional Neural Networks
+- [Convolution](ConvolutionalNeuralNetworks/convolution.md)
 - [The Convolutional Layer](ConvolutionalNeuralNetworks/convolutional_layer.md)
     - [Numpy Implementation](ConvolutionalNeuralNetworks/convolution.py)
 - [Pooling Layers](ConvolutionalNeuralNetworks/pool_layer.md)
