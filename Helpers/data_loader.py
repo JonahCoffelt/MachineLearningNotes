@@ -1,4 +1,5 @@
-import numpy as np
+from .numpy_cupy import np
+import numpy as _np
 import sklearn.datasets as sk_datasets
 
 def train_valid_test_split(X: np.ndarray, Y: np.ndarray, train: float=0.8, valid: float=0.1, test: float=0.1) -> tuple[tuple[np.ndarray, np.ndarray], ...]:
@@ -31,7 +32,7 @@ def train_valid_test_split(X: np.ndarray, Y: np.ndarray, train: float=0.8, valid
     valid_end = n_train + n_valid
 
     # Shuffle the data
-    idx = np.random.default_rng(42).permutation(n_samples)
+    idx = _np.random.default_rng(42).permutation(n_samples)
     X, Y = X[idx], Y[idx]
 
     return (
@@ -144,6 +145,6 @@ def load_mnist() -> tuple[np.ndarray, np.ndarray]:
     X, labels = sk_datasets.fetch_openml(
         "mnist_784", version=1, return_X_y=True, as_frame=False, parser="liac-arff"
     )
-    X = np.asarray(X, dtype=float) / 255.0
-    labels = np.asarray(labels).astype(int)
-    return X, one_hot(labels, 10)
+    X = _np.asarray(X, dtype=_np.float32) / 255.0
+    labels = _np.asarray(labels).astype(int)
+    return np.asarray(X), np.asarray(one_hot(labels, 10), dtype=np.float32)

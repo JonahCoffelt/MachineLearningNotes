@@ -1,5 +1,6 @@
 from NeuralNetworks.layer import Layer
-import numpy as np
+# import numpy as np
+from Helpers import np
 
 
 class Linear(Layer):

@@ -5,3 +5,4 @@ from .activations import Tanh, ReLU
 from .dropout import Dropout
 from .batch_norm import BatchNorm1d
 from .loss import Loss, CrossEntropy
+from .flatten import Flatten

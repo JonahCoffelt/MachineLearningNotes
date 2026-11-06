@@ -1,5 +1,5 @@
 from NeuralNetworks.layer import Layer
-import numpy as np
+from Helpers import np
 
 
 class BatchNorm1d(Layer):
@@ -17,7 +17,7 @@ class BatchNorm1d(Layer):
 
         self.gamma = np.ones(num_features)
         self.beta = np.zeros(num_features)
-        self.epsilon = 0.0
+        self.epsilon = 1e-5
 
         self.x = np.zeros(num_features)
         self.x_hat = np.zeros(num_features)
@@ -53,7 +53,7 @@ class BatchNorm1d(Layer):
     def backprop(self, sensitivity: np.ndarray) -> np.ndarray:
         # TODO
 
-        self.dg = np.sum(sensitivity * self.x, axis=0)
+        self.dg = np.sum(sensitivity * self.x_hat, axis=0)
         self.db = np.sum(sensitivity, axis=0)
 
         m = len(self.x)

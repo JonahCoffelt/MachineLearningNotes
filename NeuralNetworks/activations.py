@@ -1,5 +1,5 @@
 from NeuralNetworks.layer import Layer
-import numpy as np
+from Helpers import np
 
 
 class Tanh(Layer):

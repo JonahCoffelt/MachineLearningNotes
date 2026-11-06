@@ -1,13 +1,13 @@
-import numpy as np
+from Helpers import np
 from NeuralNetworks import *
-
+import numpy as _np
 
 class NeuralNetwork:
     def __init__(self, layers: tuple[Layer, ...], loss_layer: Loss) -> None:
         self.layers = layers
         self.loss_layer = loss_layer
 
-        self.rng = np.random.default_rng(42)
+        self.rng = _np.random.default_rng(42)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """

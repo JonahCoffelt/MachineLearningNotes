@@ -1,4 +1,4 @@
-import numpy as np
+from Helpers import np
 
 
 def softmax(v: np.ndarray) -> np.ndarray:

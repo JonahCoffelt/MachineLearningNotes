@@ -1,5 +1,6 @@
-from Helpers import load_iris, normalized_split, load_mnist, train_valid_test_split, accuracy
+from Helpers import load_iris, normalized_split, load_mnist, train_valid_test_split, accuracy, np
 from NeuralNetworks import *
+from ConvolutionalNeuralNetworks import *
 
 
 def test_iris():
@@ -56,7 +57,6 @@ def test_mnist():
     # Test
     print("Begin testing:")
     print("MNIST test accuracy:", accuracy(model, X_test, Y_test))
-
 
 if __name__ == "__main__":
     # test_iris()
