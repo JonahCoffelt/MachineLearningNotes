@@ -6,11 +6,11 @@ def test_mnist_cnn():
     print("Creating an mnist CNN model...")
     model = NeuralNetwork(
         (
-            Conv2d(1, 16, kernel_size=3, stride=1, padding=1), ReLU(),    # (N, 16, 28, 28)
-            MaxPool2d(2),                                                    # (N, 16, 14, 14)
-            Conv2d(16, 32, kernel_size=3, stride=1, padding=1), ReLU(),   # (N, 32, 14, 14)
-            MaxPool2d(2),                                                    # (N, 32, 7, 7)
-            Flatten(),                                                       # (N, 1568)
+            Conv2d(1, 16, kernel_size=3, stride=1, padding=1), ReLU(),
+            MaxPool2d(2),
+            Conv2d(16, 32, kernel_size=3, stride=1, padding=1), ReLU(),
+            MaxPool2d(2),
+            Flatten(),
             Linear(1568, 128, 1e-5), ReLU(), Dropout(0.3),
             Linear(128, 10, 1e-5),
         ),

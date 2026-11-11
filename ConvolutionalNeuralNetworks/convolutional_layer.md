@@ -11,3 +11,38 @@ Every kernel must have the same depth as the input. In the above RGB example, ou
 We can produce more output activation maps by increasing the number of kernels in the layer. The number of output maps will be equal to the number of kernels. For example, if we have a 32x32x3 image and apply six 5x5x3 kernels, the output will be a 28x28x6 activation volume.
 
 ![convolutional_layer_example2](./../Images/convolutional_layer_example2.png)
+
+## Padding
+A convolution can only be applied to a full patch of pixels, so any kernel larger than 1x1 cannot be applied to the entire image; we cant have kernel pixels hanging off the image. Because of this, the convolution will reduce the size of the output image. The amount of this decrease is determined by the kernel size. Intutitivly, a 3x3 convolution will reduce the x and y dimensions by 2, since we will lose one pixel at each border. Likewise, a 5x5 will reduce the image by 4 on each axis. This reduction is not always desirable, esspecially for larger networks, so we will introduce padding to solve this. Padding adds extra pixels to the border of the image so we can convolve over the entire image. Typically, these pixels will just be set to 0, but there are certainly other ways to determine the value of the padded pixels.
+
+![padding](./../Images/padding.png)
+
+This allows the dimension of the image to be preserved. The number of border pixels is given by the floor of the kernel size divided by 2.
+
+$$\text{padding} = \lfloor \frac{k}{2} \rfloor$$
+
+## Stride
+By default, the kernel convolves over the image by sliding over every pixel of the image one by one. However, we will sometimes want to "skip" over some pixel. We do this by introducing a stride, which determines how far the convolution moves between patches. The default stride is 1. Increasing the stride will lead to smaller output images, as there are less convolutions computed. In general, the size of the output image, considering the size of the kernel $k$, stride $s$, and input size $N_{in}$ is given by:
+
+$$N_{out} = \frac{N_{in} - k}{s} + 1$$
+
+## Number of Trainable Parameters
+It is important to note the number of trainable parameters in a given convolutional layer. Convolution is a special case of local connection and weight sharing. This setup allows for each layer to process large images with relativly few trainable parameters. 
+
+![local_and_sharing](./../Images/local_and_sharing.png)
+
+In general, the number of parameters is defined by the kernel size $k$, number of input feature maps $M_{in}$, and number of output feature maps $M_{out}$:
+
+$$\text{parameters} = M_{out} \cdot (M_{in} \cdot k^2 + 1)$$
+
+The plus one is the bias for each output layer. 
+
+## Convolution Equavariance
+Convolution is said to be equavariant under translation. That is, given an image, it is equivalent to convolve then translate and to translate then convolve. Formally:
+
+$$\text{conv}(\text{translation}(x)) = \text{translation}(\text{conv}(x))$$
+
+![conv_equa](./../Images/conv_equa.png)
+
+However, it is important to note that this property does not hold for rotational transformations. Because of this, it is much easier to learn translations than rotations. 
+
