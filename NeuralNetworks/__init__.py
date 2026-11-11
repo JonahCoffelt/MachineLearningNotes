@@ -3,6 +3,6 @@ from .layer import Layer
 from .lienar import Linear
 from .activations import Tanh, ReLU
 from .dropout import Dropout
-from .batch_norm import BatchNorm1d
+from .batch_norm import BatchNorm1d, BatchNorm2d
 from .loss import Loss, CrossEntropy
 from .flatten import Flatten
