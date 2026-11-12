@@ -9,4 +9,4 @@ requires-python = ">=3.10"
 dependencies = ["numpy", "cupy-cuda12x", "cupy-cuda12x[ctk]", "scikit-learn", "matplotlib"]
 
 [tool.setuptools]
-packages = ["Helpers", "NeuralNetworks", "Visualization", "ConvolutionalNeuralNetworks"]
+packages = ["Helpers", "NeuralNetworks", "Visualization", "ConvolutionalNeuralNetworks", "Experiments"]

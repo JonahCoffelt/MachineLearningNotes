@@ -1,5 +1,18 @@
 from NeuralNetworks.layer import Layer
-from Helpers import np
+from Helpers import np, fuse
+
+
+@fuse()
+def _bn_apply(x, mean, inv_std, gamma, beta):
+    # Normalize, scale, and shift in one pass. Returns (x_hat, output)
+    x_hat = (x - mean) * inv_std
+    return x_hat, x_hat * gamma + beta
+
+
+@fuse()
+def _bn_input_grad(dy, x_hat, db_mean, dg_mean, scale):
+    # dx = gamma / std * (dy - mean(dy) - x_hat * mean(dy * x_hat)), in one pass
+    return scale * (dy - db_mean - x_hat * dg_mean)
 
 
 class BatchNorm1d(Layer):
@@ -15,8 +28,8 @@ class BatchNorm1d(Layer):
         self.batch_mean = 0.0
         self.batch_variance = 1.0
 
-        self.gamma = np.ones(num_features)
-        self.beta = np.zeros(num_features)
+        self.gamma = np.ones(num_features, dtype=np.float32)
+        self.beta = np.zeros(num_features, dtype=np.float32)
         self.epsilon = 1e-5
 
         self.x = np.zeros(num_features)
@@ -83,21 +96,18 @@ class BatchNorm2d(Layer):
         self.num_features = num_features
 
         # Per-channel statistics, shaped (1, C, 1, 1) to broadcast against (N, C, H, W)
-        self.running_mean = np.zeros((1, num_features, 1, 1))
-        self.running_variance = np.ones((1, num_features, 1, 1))
+        self.running_mean = np.zeros((1, num_features, 1, 1), dtype=np.float32)
+        self.running_variance = np.ones((1, num_features, 1, 1), dtype=np.float32)
         self.momentum = momentum
 
-        self.batch_mean = np.zeros((1, num_features, 1, 1))
-        self.batch_variance = np.ones((1, num_features, 1, 1))
-
-        self.gamma = np.ones(num_features)
-        self.beta = np.zeros(num_features)
+        self.gamma = np.ones(num_features, dtype=np.float32)
+        self.beta = np.zeros(num_features, dtype=np.float32)
         self.epsilon = 1e-5
 
-        self.x = None
         self.x_hat = None
-        self.dg = np.zeros(num_features)
-        self.db = np.zeros(num_features)
+        self.inv_std = None
+        self.dg = np.zeros(num_features, dtype=np.float32)
+        self.db = np.zeros(num_features, dtype=np.float32)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -106,29 +116,24 @@ class BatchNorm2d(Layer):
         Returns:
             numpy array (N, C, H, W) of normalized feature maps
         """
-        # Keep track of inputs
-        self.x = x
-
         # Default to running stats
         mean = self.running_mean
         variance = self.running_variance
 
         # In training use batch mean and variance, computed per channel over (N, H, W)
         if self.training:
-            self.batch_mean = np.mean(x, axis=(0, 2, 3), keepdims=True)
-            self.batch_variance = np.var(x, axis=(0, 2, 3), keepdims=True)
-            mean, variance = self.batch_mean, self.batch_variance
+            mean = np.mean(x, axis=(0, 2, 3), keepdims=True)
+            variance = np.var(x, axis=(0, 2, 3), keepdims=True)
 
             m = x.shape[0] * x.shape[2] * x.shape[3]
             unbiased_var = variance * m / max(m - 1, 1)
             self.running_mean = (1 - self.momentum) * self.running_mean + self.momentum * mean
             self.running_variance = (1 - self.momentum) * self.running_variance + self.momentum * unbiased_var
 
-        # Normalize, scale, and shift
-        self.x_hat = (x - mean) / np.sqrt(variance + self.epsilon)
-        gamma = self.gamma.reshape(1, -1, 1, 1)
-        beta = self.beta.reshape(1, -1, 1, 1)
-        return self.x_hat * gamma + beta
+        # Normalize, scale, and shift (one fused kernel on the GPU)
+        self.inv_std = 1 / np.sqrt(variance + self.epsilon)
+        self.x_hat, out = _bn_apply(x, mean, self.inv_std, self.gamma.reshape(1, -1, 1, 1), self.beta.reshape(1, -1, 1, 1))
+        return out
 
     def backprop(self, sensitivity: np.ndarray) -> np.ndarray:
         """
@@ -142,16 +147,12 @@ class BatchNorm2d(Layer):
         self.db = np.sum(sensitivity, axis=axes)
 
         # Number of values each channel's statistics are computed over
-        m = self.x.shape[0] * self.x.shape[2] * self.x.shape[3]
-        inv_std = 1 / np.sqrt(self.batch_variance + self.epsilon)
-        x_centered = self.x - self.batch_mean
+        m = sensitivity.shape[0] * sensitivity.shape[2] * sensitivity.shape[3]
 
-        dl_dx_hat = sensitivity * self.gamma.reshape(1, -1, 1, 1)
-        dl_dvar = np.sum(dl_dx_hat * x_centered * (-1 / 2) * inv_std ** 3, axis=axes, keepdims=True)
-        dl_dmean = np.sum(dl_dx_hat * -inv_std, axis=axes, keepdims=True) + dl_dvar * np.sum(-2 * x_centered, axis=axes, keepdims=True) / m
-        dl_dx = dl_dx_hat * inv_std + dl_dvar * 2 * x_centered / m + dl_dmean / m
-
-        return dl_dx
+        # The mean/variance terms of the derivation collapse to the per-channel means of dy and dy * x_hat,
+        # which are exactly db and dg: dx = gamma / std * (dy - mean(dy) - x_hat * mean(dy * x_hat))
+        scale = self.gamma.reshape(1, -1, 1, 1) * self.inv_std
+        return _bn_input_grad(sensitivity, self.x_hat, (self.db / m).reshape(1, -1, 1, 1), (self.dg / m).reshape(1, -1, 1, 1), scale)
 
     def params(self) -> list[np.ndarray]:
         return [self.gamma, self.beta]

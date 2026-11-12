@@ -3,7 +3,6 @@ from NeuralNetworks import *
 from ConvolutionalNeuralNetworks import *
 
 def test_mnist_cnn():
-    print("Creating an mnist CNN model...")
     model = NeuralNetwork(
         (
             Conv2d(1, 16, kernel_size=3, stride=1, padding=1), ReLU(),
@@ -35,3 +34,7 @@ def test_mnist_cnn():
 
     print("Begin testing:")
     print("MNIST CNN test accuracy:", accuracy(model, X_test, Y_test))
+
+
+if __name__ == "__main__":
+    test_mnist_cnn()

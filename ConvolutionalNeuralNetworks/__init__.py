@@ -1,3 +1,3 @@
 from ConvolutionalNeuralNetworks.convolution import Conv2d
-from ConvolutionalNeuralNetworks.pool import MaxPool2d
+from ConvolutionalNeuralNetworks.pool import MaxPool2d, GlobalAvgPool2d
 from ConvolutionalNeuralNetworks.residual import ResidualBlock

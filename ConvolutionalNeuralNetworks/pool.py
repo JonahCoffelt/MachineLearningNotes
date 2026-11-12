@@ -36,7 +36,7 @@ class MaxPool2d(Layer):
         """
         k, s = self.kernel_size, self.stride
         _, _, Ho, Wo = sensitivity.shape
-        dx = np.zeros(self.x_shape)
+        dx = np.zeros(self.x_shape, dtype=sensitivity.dtype)
 
         for u in range(k):
             for v in range(k):
@@ -44,3 +44,30 @@ class MaxPool2d(Layer):
                 dx[:, :, u:u + s * Ho:s, v:v + s * Wo:s] += sensitivity * mask
 
         return dx
+
+class GlobalAvgPool2d(Layer):
+    def __init__(self) -> None:
+        super().__init__()
+        self.x_shape = None
+
+    def forward(self, x: np.ndarray) -> np.ndarray:
+        """
+        Averages each feature map down to a single value.
+        Args:
+            x: (N, C, H, W)
+        Returns:
+            (N, C)
+        """
+        self.x_shape = x.shape
+        return x.mean(axis=(2, 3))
+
+    def backprop(self, sensitivity: np.ndarray) -> np.ndarray:
+        """
+        Spreads the gradient evenly over every spatial position.
+        Args:
+            sensitivity: (N, C)
+        Returns:
+            (N, C, H, W)
+        """
+        _, _, H, W = self.x_shape
+        return np.broadcast_to(sensitivity[:, :, None, None], self.x_shape) / (H * W)

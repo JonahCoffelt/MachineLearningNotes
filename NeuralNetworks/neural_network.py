@@ -43,7 +43,7 @@ class NeuralNetwork:
         for layer in reversed(self.layers):
             sensitivity = layer.backprop(sensitivity)
 
-    def train(self, X, Y, learning_rate, batch_size, epochs) -> None:
+    def train(self, X, Y, learning_rate, batch_size, epochs, augment=None) -> list[float]:
         """
         Train the neural network.
         Args:
@@ -52,12 +52,17 @@ class NeuralNetwork:
             learning_rate: float: learning rate
             batch_size: int: batch size
             epochs: int: number of epochs
+            augment: optional callable applied to each training batch of inputs, e.g. Helpers.RandomFlipCrop().
+                     Never applied during prediction.
+        Returns:
+            list of the mean training loss of each epoch
         """
 
         for layer in self.layers:
             layer.training = True
         
         n_samples = len(X)
+        history = []
         for epoch in range(epochs):
             order = self.rng.permutation(n_samples)
             loss_accumulation = 0.0
@@ -67,6 +72,8 @@ class NeuralNetwork:
 
                 x = X[idx]
                 y = Y[idx]
+                if augment is not None:
+                    x = augment(x)
 
                 logits = self.forward(x)
                 loss = self.loss(logits, y)
@@ -78,17 +85,24 @@ class NeuralNetwork:
 
                 loss_accumulation += loss * len(idx)
 
-            print(f"Epoch {epoch + 1} - Loss {loss_accumulation / n_samples:.4f}")
+            history.append(float(loss_accumulation / n_samples))
+            print(f"Epoch {epoch + 1} - Loss {history[-1]:.4f}")
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+        return history
+
+    def predict(self, X: np.ndarray, batch_size: int = 512) -> np.ndarray:
         """
         Predict the class of the input data.
         Args:
             X: numpy array (n_samples, in_dim) of input features
+            batch_size: int: number of samples per forward pass, to bound memory use (e.g. conv im2col buffers)
         Returns:
-            numpy array (n_samples, out_dim) of predicted features
+            numpy array (n_samples,) of predicted class indices
         """
         for layer in self.layers:
             layer.training = False
 
-        return np.argmax(self.forward(X), axis=1)
+        return np.concatenate([
+            np.argmax(self.forward(X[start:start + batch_size]), axis=1)
+            for start in range(0, len(X), batch_size)
+        ])

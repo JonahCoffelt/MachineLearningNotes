@@ -19,7 +19,7 @@ class Dropout(Layer):
         self.mask = (self.rng.random(x.shape) >= self.drop_probability)
 
         # Divide by (1 - p) so that prediction stays consistent
-        self.mask = self.mask / (1 - self.drop_probability)
+        self.mask = self.mask.astype(x.dtype) / (1 - self.drop_probability)
         return x * self.mask
 
     def backprop(self, sensitivity: np.ndarray) -> np.ndarray:

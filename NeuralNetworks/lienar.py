@@ -21,8 +21,8 @@ class Linear(Layer):
         # Initialize the weights and biases
         # self.W = self.rng.standard_normal((in_dim, out_dim)) * np.sqrt(2 / in_dim)
         # self.W = self.rng.random((in_dim, out_dim)) * 2 - 1
-        self.W = self.rng.standard_normal((in_dim, out_dim)) * np.sqrt(2 / (in_dim + out_dim))
-        self.b = np.zeros(out_dim)
+        self.W = (self.rng.standard_normal((in_dim, out_dim)) * np.sqrt(2 / (in_dim + out_dim))).astype(np.float32)
+        self.b = np.zeros(out_dim, dtype=np.float32)
         
         # Initalize the input and gradient states
         self.dW = np.zeros_like(self.W)

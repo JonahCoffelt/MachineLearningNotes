@@ -12,8 +12,8 @@ class Conv2d(Layer):
         self.stride = stride
         self.padding = padding
 
-        self.kernels = self.rng.standard_normal((out_channels, in_channels, kernel_size, kernel_size)) * np.sqrt(2 / (in_channels * kernel_size * kernel_size))
-        self.b = np.zeros((out_channels))
+        self.kernels = (self.rng.standard_normal((out_channels, in_channels, kernel_size, kernel_size)) * np.sqrt(2 / (in_channels * kernel_size * kernel_size))).astype(np.float32)
+        self.b = np.zeros((out_channels), dtype=np.float32)
 
         self.x_pad = None
         self.cols = None

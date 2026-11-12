@@ -1,6 +1,12 @@
 from .numpy_cupy import np
 import numpy as _np
 import sklearn.datasets as sk_datasets
+import hashlib
+import os
+import pickle
+import tarfile
+import urllib.request
+from pathlib import Path
 
 def train_valid_test_split(X: np.ndarray, Y: np.ndarray, train: float=0.8, valid: float=0.1, test: float=0.1) -> tuple[tuple[np.ndarray, np.ndarray], ...]:
     """
@@ -147,4 +153,64 @@ def load_mnist() -> tuple[np.ndarray, np.ndarray]:
     )
     X = _np.asarray(X, dtype=_np.float32) / 255.0
     labels = _np.asarray(labels).astype(int)
+    return np.asarray(X), np.asarray(one_hot(labels, 10), dtype=np.float32)
+
+_CIFAR10_URL = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"
+_CIFAR10_MD5 = "c58f30108f718f92721af3b95e74349a"
+
+def load_cifar10(cache_dir: str | os.PathLike | None = None) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Loads the CIFAR-10 dataset, downloading it on first use and caching it locally.
+    The parsed arrays are cached as a compressed .npz so later calls skip the download
+    and the archive parsing.
+    Args:
+        cache_dir: where to store the cache. Defaults to ~/.cache/machine_learning_notes/cifar10
+    Returns:
+        X: (60000, 3, 32, 32) array of images in (N, C, H, W) layout, scaled to [0, 1]
+        Y: (60000, 10) array of one-hot labels (airplane, automobile, bird, cat, deer, dog, frog, horse, ship, truck)
+        The first 50000 samples are the official training set and the last 10000 are the official test set.
+    """
+
+    cache_dir = Path(cache_dir) if cache_dir is not None else Path.home() / ".cache" / "machine_learning_notes" / "cifar10"
+    cache_file = cache_dir / "cifar10.npz"
+
+    if cache_file.exists():
+        with _np.load(cache_file) as data:
+            images, labels = data["images"], data["labels"]
+    else:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        archive = cache_dir / "cifar-10-python.tar.gz"
+
+        if not archive.exists():
+            print(f"Downloading CIFAR-10 to {archive} ...")
+            tmp = archive.with_suffix(".part")
+            urllib.request.urlretrieve(_CIFAR10_URL, tmp)
+            tmp.replace(archive)
+
+        # Verify the download before unpickling anything from it
+        md5 = hashlib.md5()
+        with open(archive, "rb") as f:
+            for chunk in iter(lambda: f.read(1 << 20), b""):
+                md5.update(chunk)
+        if md5.hexdigest() != _CIFAR10_MD5:
+            archive.unlink()
+            raise RuntimeError("CIFAR-10 download failed its checksum and was deleted. Please try again.")
+
+        names = [f"cifar-10-batches-py/data_batch_{i}" for i in range(1, 6)] + ["cifar-10-batches-py/test_batch"]
+        image_batches, label_batches = [], []
+        with tarfile.open(archive, "r:gz") as tar:
+            for name in names:
+                batch = pickle.load(tar.extractfile(name), encoding="bytes")
+                # Each row is 3072 values: 1024 red, then 1024 green, then 1024 blue
+                image_batches.append(_np.asarray(batch[b"data"], dtype=_np.uint8).reshape(-1, 3, 32, 32))
+                label_batches.append(_np.asarray(batch[b"labels"], dtype=_np.int64))
+        images = _np.concatenate(image_batches)
+        labels = _np.concatenate(label_batches)
+
+        tmp = cache_file.with_name("cifar10.tmp.npz")
+        _np.savez_compressed(tmp, images=images, labels=labels)
+        tmp.replace(cache_file)
+        archive.unlink()  # the parsed cache replaces the raw archive
+
+    X = images.astype(_np.float32) / 255.0
     return np.asarray(X), np.asarray(one_hot(labels, 10), dtype=np.float32)
